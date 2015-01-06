@@ -53,21 +53,29 @@ public class MainActivity extends Activity
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "PFIrWVFL7MJ1QIFkJ3WvX9DrXXtNOyzpa7njYBf0", "qXnCfX6cY3wWfm5IBefPXGxARVp61fubYJ0qlaxZ");
 
-//        ParseObject testObject = new ParseObject("TestObject");
-//        testObject.put("foo", "bar");
-//        testObject.put("foo", "bar2");
-//        testObject.put("shoo", "boo");
-//        testObject.saveInBackground();
-
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        if( position == 0 ) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                    .commit();
+        } else if( position == 1 ) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, AddTransactionFragment.newInstance(position + 1))
+                    .commit();
+        } else if( position == 2 ) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, ListTransactionFragment.newInstance(position + 1))
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                    .commit();
+        }
     }
 
     public void onSectionAttached(int number) {
