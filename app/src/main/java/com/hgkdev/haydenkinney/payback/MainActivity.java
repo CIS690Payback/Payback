@@ -1,25 +1,21 @@
 package com.hgkdev.haydenkinney.payback;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.Parse;
-import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 
 public class MainActivity extends Activity
@@ -53,7 +49,17 @@ public class MainActivity extends Activity
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "PFIrWVFL7MJ1QIFkJ3WvX9DrXXtNOyzpa7njYBf0", "qXnCfX6cY3wWfm5IBefPXGxARVp61fubYJ0qlaxZ");
 
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if( currentUser == null ) {
+            Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(loginIntent);
+        } else {
+            Toast.makeText(MainActivity.this, currentUser.getUsername(), Toast.LENGTH_LONG).show();
+        }
+
     }
+
+
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
