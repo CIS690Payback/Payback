@@ -53,6 +53,7 @@ public class MainActivity extends Activity
         if( currentUser == null ) {
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(loginIntent);
+//            finish();
         } else {
             Toast.makeText(MainActivity.this, currentUser.getUsername(), Toast.LENGTH_LONG).show();
         }
@@ -129,9 +130,23 @@ public class MainActivity extends Activity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if(id == R.id.action_logout) {
+            logoutCurrentUser();
         }
 
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logoutCurrentUser() {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        Intent intent = new Intent(this, LoginActivity.class);
+        if (currentUser != null) {
+            currentUser.logOut();
+            Toast.makeText(this, "User " + currentUser.getUsername() + " logged out", Toast.LENGTH_LONG).show();
+        }
+        startActivity(intent);
+//        finish();
     }
 
     /**

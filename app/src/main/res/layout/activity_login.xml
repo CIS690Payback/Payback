@@ -13,11 +13,12 @@
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/emailEditText"
-        android:layout_marginTop="191dp"
+        android:layout_marginTop="15dp"
         android:hint="E-mail"
         android:width="275dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignRight="@+id/forgotPasswordTextView"
+        android:layout_alignEnd="@+id/forgotPasswordTextView" />
 
     <EditText
         android:layout_width="wrap_content"

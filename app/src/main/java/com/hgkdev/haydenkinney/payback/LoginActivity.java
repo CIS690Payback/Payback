@@ -1,6 +1,8 @@
 package com.hgkdev.haydenkinney.payback;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import com.parse.SignUpCallback;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 
 public class LoginActivity extends Activity {
@@ -53,6 +56,8 @@ public class LoginActivity extends Activity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
+//                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+//                        startActivity(mainIntent);
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Email already used. Use forgot password if necessary", Toast.LENGTH_LONG).show();
@@ -68,6 +73,8 @@ public class LoginActivity extends Activity {
             ParseUser.logInInBackground(emailEditText.getText().toString(), passwordEditText.getText().toString(), new LogInCallback() {
                 public void done(ParseUser user, ParseException e) {
                     if (user != null) {
+//                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+//                        startActivity(mainIntent);
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Login Failed. Please try again, or use forgot password if necessary", Toast.LENGTH_LONG).show();
@@ -79,17 +86,7 @@ public class LoginActivity extends Activity {
 
     public void forgotPassword(View v) {
         if( checkEmailValue() ) {
-            ParseUser.requestPasswordResetInBackground(emailEditText.getText().toString(),
-                    new RequestPasswordResetCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if( e == null ) {
-                                Toast.makeText(LoginActivity.this, "Password reset email successfully sent", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Email address does not exist, please try again or register.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
+            new Change_Password(LoginActivity.this, emailEditText.getText().toString() ).execute();
         }
     }
 
@@ -110,6 +107,8 @@ public class LoginActivity extends Activity {
         Toast.makeText(LoginActivity.this, "Please enter your email in the email field, and try again.", Toast.LENGTH_LONG).show();
         return false;
     }
+
+
     private boolean checkTextValues() {
         String emailAddress = emailEditText.getText().toString();
 
@@ -138,9 +137,6 @@ public class LoginActivity extends Activity {
 
     }
 
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -164,4 +160,48 @@ public class LoginActivity extends Activity {
     }
 }
 
+class Change_Password extends AsyncTask<Void, Void, Void> {
 
+    Activity mActivity;
+    String   mEmailAccount;
+    ProgressDialog progress;
+
+    public Change_Password( Activity activity, String emailAccount ) {
+        mActivity = activity;
+        mEmailAccount = emailAccount;
+        progress = new ProgressDialog( mActivity );
+    }
+
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progress.setCancelable(true);
+        progress.setMessage("Sending Reset Email");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.show();
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+        ParseUser.requestPasswordResetInBackground(mEmailAccount,
+                new RequestPasswordResetCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Toast.makeText(mActivity, "Password reset email successfully sent", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(mActivity, "Email address does not exist, please try again or register.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+
+        return null;
+    }
+    protected void onPostExecute(Void results) {
+        super.onPostExecute(results);
+        progress.dismiss();
+    }
+}
