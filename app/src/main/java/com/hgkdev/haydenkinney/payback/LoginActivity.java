@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,35 +62,14 @@ public class LoginActivity extends Activity {
             user.setPassword(passwordEditText.getText().toString());
             user.setEmail(emailEditText.getText().toString());
 
-            user.signUpInBackground(new SignUpCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(mainIntent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Email already used. Use forgot password if necessary", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+            new Register_User( LoginActivity.this, user ).execute();
         }
 
     }
 
     public void loginUser(View v) {
         if( checkTextValues() ) {
-            ParseUser.logInInBackground(emailEditText.getText().toString(), passwordEditText.getText().toString(), new LogInCallback() {
-                public void done(ParseUser user, ParseException e) {
-                    if (user != null) {
-                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(mainIntent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Login Failed. Please try again, or use forgot password if necessary", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+            new Login_User(LoginActivity.this, emailEditText.getText().toString(), passwordEditText.getText().toString() ).execute();
         }
     }
 
@@ -196,7 +176,7 @@ class Change_Password extends AsyncTask<Void, Void, Void> {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Toast.makeText(mActivity, "Password reset email successfully sent", Toast.LENGTH_LONG).show();
+                            Log.i("PAYBACK", "Sent forgot password reset email to " + mEmailAccount );
                         } else {
                             Toast.makeText(mActivity, "Email address does not exist, please try again or register.", Toast.LENGTH_LONG).show();
                         }
@@ -212,5 +192,124 @@ class Change_Password extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void results) {
         super.onPostExecute(results);
         progress.dismiss();
+    }
+}
+
+class Login_User extends AsyncTask<Void, Void, Void> {
+    Activity mActivity;
+    String mEmailAccount, mPassword;
+    ProgressDialog progress;
+    Boolean mLoginFailed;
+
+    public Login_User( Activity activity, String emailAccount, String password ) {
+        mActivity = activity;
+        mEmailAccount = emailAccount;
+        mPassword = password;
+        progress = new ProgressDialog( mActivity );
+
+    }
+
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progress.setCancelable(true);
+        progress.setMessage("Attempting Log In");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.show();
+    }
+
+    protected Void doInBackground(Void... params) {
+        mLoginFailed = false;
+        ParseUser.logInInBackground(mEmailAccount, mPassword, new LogInCallback() {
+            public void done(ParseUser user, ParseException e) {
+                if (user != null) {
+                    Log.i("PAYBACK", "Logged user " + mEmailAccount + " in successfully.");
+                } else {
+                    Toast.makeText(mActivity, "Login Failed. Please try again, or use forgot password if necessary", Toast.LENGTH_LONG).show();
+                    mLoginFailed = true;
+                }
+            }
+        });
+        ParseUser currentUser = null;
+        while( currentUser == null && mLoginFailed == false ) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+            currentUser = ParseUser.getCurrentUser();
+        }
+
+        return null;
+    }
+
+    protected void onPostExecute(Void results) {
+        super.onPostExecute(results);
+        if( mLoginFailed == false ) {
+            Intent mainIntent = new Intent(mActivity.getApplicationContext(), MainActivity.class);
+            Log.d("PAYBACK", "In Login_User PostExecute");
+            progress.dismiss();
+            mActivity.startActivity(mainIntent);
+            mActivity.finish();
+        } else {
+            progress.dismiss();
+        }
+    }
+}
+
+class Register_User extends AsyncTask<Void, Void, Void> {
+    Activity mActivity;
+    ParseUser mNewUser;
+    ProgressDialog progress;
+    Boolean mRegisterFailed;
+
+    public Register_User( Activity activity, ParseUser newUser ) {
+        mActivity = activity;
+        mNewUser = newUser;
+        progress = new ProgressDialog( mActivity );
+    }
+
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progress.setCancelable(true);
+        progress.setMessage("Registering New User");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.show();
+    }
+
+    protected Void doInBackground(Void... params) {
+        mRegisterFailed = false;
+        mNewUser.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.i("PAYBACK", "User " + mNewUser.getUsername() + " successfully registered");
+                } else {
+                    Toast.makeText(mActivity, "Email already used. Use forgot password if necessary", Toast.LENGTH_LONG).show();
+                    mRegisterFailed = true;
+                }
+            }
+        });
+        ParseUser currentUser = null;
+        while( currentUser == null && mRegisterFailed == false ) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+            currentUser = ParseUser.getCurrentUser();
+        }
+        return null;
+    }
+
+    protected void onPostExecute(Void results) {
+        super.onPostExecute(results);
+        if( mRegisterFailed == false ) {
+            Intent mainIntent = new Intent(mActivity, MainActivity.class);
+            Log.d("PAYBACK", "In Register_User PostExecute");
+            progress.dismiss();
+            mActivity.startActivity(mainIntent);
+            mActivity.finish();
+        } else {
+            progress.dismiss();
+        }
+
     }
 }

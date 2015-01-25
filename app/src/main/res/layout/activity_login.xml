@@ -27,7 +27,7 @@
         android:id="@+id/passwordEditText"
         android:layout_below="@+id/emailEditText"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="12dp"
         android:inputType="textPassword"
         android:hint="Password"
         android:width="275dp" />
