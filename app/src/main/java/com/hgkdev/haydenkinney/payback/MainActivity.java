@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.parse.Parse;
 import com.parse.ParseUser;
 
 
@@ -45,15 +44,13 @@ public class MainActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "PFIrWVFL7MJ1QIFkJ3WvX9DrXXtNOyzpa7njYBf0", "qXnCfX6cY3wWfm5IBefPXGxARVp61fubYJ0qlaxZ");
+
 
         ParseUser currentUser = ParseUser.getCurrentUser();
         if( currentUser == null ) {
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(loginIntent);
-//            finish();
+            finish();
         } else {
             Toast.makeText(MainActivity.this, currentUser.getUsername(), Toast.LENGTH_LONG).show();
         }
@@ -146,7 +143,7 @@ public class MainActivity extends Activity
             Toast.makeText(this, "User " + currentUser.getUsername() + " logged out", Toast.LENGTH_LONG).show();
         }
         startActivity(intent);
-//        finish();
+        finish();
     }
 
     /**

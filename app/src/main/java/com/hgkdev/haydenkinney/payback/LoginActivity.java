@@ -2,6 +2,7 @@ package com.hgkdev.haydenkinney.payback;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -36,6 +37,14 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if( currentUser != null ) {
+            Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(mainIntent);
+            finish();
+        }
+
         forgotPassword = (TextView) this.findViewById(R.id.forgotPasswordTextView);
         registerButton = (Button) this.findViewById(R.id.registerButton);
         loginButton = (Button) this.findViewById(R.id.loginButton);
@@ -56,8 +65,8 @@ public class LoginActivity extends Activity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-//                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                        startActivity(mainIntent);
+                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(mainIntent);
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Email already used. Use forgot password if necessary", Toast.LENGTH_LONG).show();
@@ -73,8 +82,8 @@ public class LoginActivity extends Activity {
             ParseUser.logInInBackground(emailEditText.getText().toString(), passwordEditText.getText().toString(), new LogInCallback() {
                 public void done(ParseUser user, ParseException e) {
                     if (user != null) {
-//                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                        startActivity(mainIntent);
+                        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(mainIntent);
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Login Failed. Please try again, or use forgot password if necessary", Toast.LENGTH_LONG).show();
