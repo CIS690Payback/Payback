@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_height="200dp"
+        android:layout_width="fill_parent">
+
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText_GroupName"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="36dp"
+            android:width="275dp"
+            android:hint="Group Name" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Group"
+            android:id="@+id/button_CreateGroup"
+            android:layout_alignParentBottom="true"
+            android:layout_alignLeft="@+id/editText_GroupName"
+            android:layout_alignStart="@+id/editText_GroupName"
+            android:layout_marginBottom="38dp"
+            android:layout_alignRight="@+id/editText_GroupName"
+            android:layout_alignEnd="@+id/editText_GroupName" />
+    </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginTop="15dp"
+        android:text="Groups:"
+        android:layout_gravity="center_horizontal" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/groupView_Groups" />
+    </RelativeLayout>
+
+</LinearLayout>

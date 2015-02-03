@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 
@@ -75,6 +76,10 @@ public class MainActivity extends Activity
             fragmentManager.beginTransaction()
                     .replace(R.id.container, ListTransactionFragment.newInstance(position + 1))
                     .commit();
+        } else if( position == 3 ) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, GroupFragment.newInstance(position + 1))
+                    .commit();
         } else {
             fragmentManager.beginTransaction()
                     .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
@@ -92,6 +97,9 @@ public class MainActivity extends Activity
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                break;
+            case 4:
+                mTitle = getString(R.string.title_section4);
                 break;
         }
     }
@@ -140,6 +148,7 @@ public class MainActivity extends Activity
         Intent intent = new Intent(this, LoginActivity.class);
         if (currentUser != null) {
             currentUser.logOut();
+            ParseObject.unpinAllInBackground();
             Toast.makeText(this, "User " + currentUser.getUsername() + " logged out", Toast.LENGTH_LONG).show();
         }
         startActivity(intent);
