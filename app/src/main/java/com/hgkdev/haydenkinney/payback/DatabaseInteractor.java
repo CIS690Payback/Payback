@@ -15,10 +15,11 @@ public class DatabaseInteractor {
 
     }
 
-    public void AddTransactionObject(String name, Double cost ) {
+    public void AddTransactionObject(String name, Double cost, ParseObject group ) {
         ParseObject addTransactionObject = new ParseObject("Transaction");
         addTransactionObject.put("Name", name);
         addTransactionObject.put("Cost", cost);
+        addTransactionObject.put("Group", group);
         addTransactionObject.saveInBackground();
     }
 

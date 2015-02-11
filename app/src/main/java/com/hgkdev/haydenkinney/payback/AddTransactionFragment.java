@@ -8,7 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseQueryAdapter;
+import com.parse.ParseUser;
 
 
 /**
@@ -28,9 +34,9 @@ public class AddTransactionFragment extends Fragment {
     Button   addTransactionButton;
     EditText nameEditText;
     EditText costEditText;
-
+    Spinner  groupSpinner;
     DatabaseInteractor db;
-
+    ParseQueryAdapter<ParseObject> adapter;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -54,6 +60,23 @@ public class AddTransactionFragment extends Fragment {
         addTransactionButton = (Button) rootView.findViewById(R.id.btn_AddTransaction);
         nameEditText = (EditText) rootView.findViewById(R.id.editText_Name);
         costEditText = (EditText) rootView.findViewById(R.id.editText_Cost);
+        groupSpinner = (Spinner)  rootView.findViewById(R.id.spinner_Group);
+
+        ParseQueryAdapter.QueryFactory<ParseObject> factory =
+                new ParseQueryAdapter.QueryFactory<ParseObject>() {
+                    public ParseQuery create() {
+                        ParseQuery query = new ParseQuery("Group");
+                        query.whereEqualTo("users", ParseUser.getCurrentUser());
+                        return query;
+                    }
+                };
+
+        adapter = new ParseQueryAdapter<ParseObject>(this.getActivity(), factory);
+        adapter.setTextKey("groupName");
+        groupSpinner.setAdapter(adapter);
+        groupSpinner.setSelection(1);
+
+        adapter.loadObjects();
 
         db = new DatabaseInteractor();
 
@@ -70,7 +93,8 @@ public class AddTransactionFragment extends Fragment {
     private void addTransaction(View v) {
         if(nameEditText.getText().length() > 0 && costEditText.getText().length() > 0) {
             db.AddTransactionObject(nameEditText.getText().toString(),
-                 Double.parseDouble(costEditText.getText().toString()));
+                 Double.parseDouble(costEditText.getText().toString()),
+                 adapter.getItem(groupSpinner.getSelectedItemPosition()));
         } else {
             sendToast("Please insert all values");
         }
@@ -91,4 +115,6 @@ public class AddTransactionFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
+
 }
+

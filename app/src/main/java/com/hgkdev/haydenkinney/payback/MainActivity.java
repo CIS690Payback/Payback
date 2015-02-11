@@ -138,8 +138,6 @@ public class MainActivity extends Activity
         } else if(id == R.id.action_logout) {
             logoutCurrentUser();
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 

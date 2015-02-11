@@ -6,12 +6,14 @@ package com.hgkdev.haydenkinney.payback;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -43,6 +45,7 @@ public class GroupFragment extends Fragment {
 
     private LayoutInflater groupInflater;
 
+
     ListView groupsListView;
     Button   registerGroupButton;
     EditText groupNameEditText;
@@ -71,6 +74,9 @@ public class GroupFragment extends Fragment {
         groupNameEditText = (EditText) rootView.findViewById(R.id.editText_GroupName);
         registerGroupButton = (Button) rootView.findViewById(R.id.button_CreateGroup);
 
+
+        // Set up other variables
+
         registerGroupButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 createGroup();
@@ -89,6 +95,18 @@ public class GroupFragment extends Fragment {
         groupsListView.setAdapter(groupsAdapter);
 
         groupInflater = (LayoutInflater) this.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        groupsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                FragmentManager fragmentManager = getFragmentManager();
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, GroupsTransactionsFragment.newInstance(4, groupsAdapter.getItem( i )))
+                        .addToBackStack("GroupsFromGroupsTransactionsFragment")
+                        .commit();
+            }
+        });
 
         return rootView;
     }
