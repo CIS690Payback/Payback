@@ -38,7 +38,7 @@ public class GroupsTransactionsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_group_transactions, container, false);
 
-
+        getActivity().getActionBar().setTitle(group.getString("groupName"));
 
         // Set up the view
         transactionList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions);
@@ -57,40 +57,6 @@ public class GroupsTransactionsFragment extends Fragment {
         transactionList.setAdapter(adapter);
 
         adapter.loadObjects();
-
-
-
-
-
-
-//        addTransactionButton = (Button) rootView.findViewById(R.id.btn_AddTransaction);
-//        nameEditText = (EditText) rootView.findViewById(R.id.editText_Name);
-//        costEditText = (EditText) rootView.findViewById(R.id.editText_Cost);
-//        groupSpinner = (Spinner)  rootView.findViewById(R.id.spinner_Group);
-//
-//        ParseQueryAdapter.QueryFactory<ParseObject> factory =
-//                new ParseQueryAdapter.QueryFactory<ParseObject>() {
-//                    public ParseQuery create() {
-//                        ParseQuery query = new ParseQuery("Group");
-//                        query.whereEqualTo("users", ParseUser.getCurrentUser());
-//                        return query;
-//                    }
-//                };
-//
-//        adapter = new ParseQueryAdapter<ParseObject>(this.getActivity(), factory);
-//        adapter.setTextKey("groupName");
-//        groupSpinner.setAdapter(adapter);
-//        groupSpinner.setSelection(1);
-//
-//        adapter.loadObjects();
-//
-//        db = new DatabaseInteractor();
-//
-//        addTransactionButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                addTransaction(v);
-//            }
-//        });
 
         return rootView;
     }

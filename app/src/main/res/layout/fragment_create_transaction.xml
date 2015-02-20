@@ -28,7 +28,8 @@
             android:layout_marginLeft="29dp"
             android:layout_marginStart="29dp"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:hint="Describe Transaction" />
 
         <TextView
             android:layout_width="wrap_content"

@@ -245,7 +245,7 @@ class Login_User extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(results);
         if( mLoginFailed == false ) {
             Intent mainIntent = new Intent(mActivity.getApplicationContext(), MainActivity.class);
-            Log.d("PAYBACK", "In Login_User PostExecute");
+            Log.d("PAYBACK", "In com.hgkdev.haydenkinney.payback.Login_User PostExecute");
             progress.dismiss();
             mActivity.startActivity(mainIntent);
             mActivity.finish();
@@ -303,7 +303,7 @@ class Register_User extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(results);
         if( mRegisterFailed == false ) {
             Intent mainIntent = new Intent(mActivity, MainActivity.class);
-            Log.d("PAYBACK", "In Register_User PostExecute");
+            Log.d("PAYBACK", "In com.hgkdev.haydenkinney.payback.Register_User PostExecute");
             progress.dismiss();
             mActivity.startActivity(mainIntent);
             mActivity.finish();

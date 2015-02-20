@@ -16,7 +16,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 import com.parse.ParseUser;
 
-
 /**
  * Created by HaydenKinney on 1/1/15.
  */
@@ -61,6 +60,9 @@ public class AddTransactionFragment extends Fragment {
         nameEditText = (EditText) rootView.findViewById(R.id.editText_Name);
         costEditText = (EditText) rootView.findViewById(R.id.editText_Cost);
         groupSpinner = (Spinner)  rootView.findViewById(R.id.spinner_Group);
+
+        costEditText.setCompoundDrawablesWithIntrinsicBounds(new TextDrawable("$"), null, null, null);
+        costEditText.setCompoundDrawablePadding("$".length() * 45);
 
         ParseQueryAdapter.QueryFactory<ParseObject> factory =
                 new ParseQueryAdapter.QueryFactory<ParseObject>() {
