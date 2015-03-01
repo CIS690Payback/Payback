@@ -1,10 +1,12 @@
 package com.hgkdev.haydenkinney.payback;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.parse.ParseObject;
@@ -57,6 +59,20 @@ public class GroupsTransactionsFragment extends Fragment {
         transactionList.setAdapter(adapter);
 
         adapter.loadObjects();
+
+        transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentManager fragmentManager = getFragmentManager();
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, adapter.getItem( position )))
+                        .addToBackStack("IndividualTransactionsFromGroupsTransactions")
+                        .commit();
+
+            }
+        });
+
 
         return rootView;
     }

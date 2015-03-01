@@ -2,11 +2,13 @@ package com.hgkdev.haydenkinney.payback;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -51,6 +53,19 @@ public class ListTransactionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_list_transactions, container, false);
         amountOwed = (TextView) rootView.findViewById(R.id.txtView_AmountOwed);
         transactions = (ListView) rootView.findViewById(R.id.listView_Transactions);
+
+        transactions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentManager fragmentManager = getFragmentManager();
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, (ParseObject)transactions.getAdapter().getItem( position )))
+                        .addToBackStack("IndividualTransactionsFromListTransactions")
+                        .commit();
+
+            }
+        });
 
         updateAmountOwed();
         return rootView;
