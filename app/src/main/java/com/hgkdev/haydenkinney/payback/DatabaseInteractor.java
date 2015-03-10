@@ -1,6 +1,7 @@
 package com.hgkdev.haydenkinney.payback;
 
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 
 /**
@@ -15,11 +16,12 @@ public class DatabaseInteractor {
 
     }
 
-    public void AddTransactionObject(String name, Double cost, ParseObject group ) {
+    public void AddTransactionObject(String name, Double cost, ParseObject group, ParseUser user ) {
         ParseObject addTransactionObject = new ParseObject("Transaction");
         addTransactionObject.put("Name", name);
         addTransactionObject.put("Cost", cost);
         addTransactionObject.put("Group", group);
+        addTransactionObject.put("Payer", user);
         addTransactionObject.saveInBackground();
     }
 

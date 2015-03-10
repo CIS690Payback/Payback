@@ -97,7 +97,8 @@ public class AddTransactionFragment extends Fragment {
         if(nameEditText.getText().length() > 0 && costEditText.getText().length() > 0) {
             db.AddTransactionObject(nameEditText.getText().toString(),
                  Double.parseDouble(costEditText.getText().toString()),
-                 adapter.getItem(groupSpinner.getSelectedItemPosition()));
+                 adapter.getItem(groupSpinner.getSelectedItemPosition()),
+                 ParseUser.getCurrentUser());
         } else {
             sendToast("Please insert all values");
         }
