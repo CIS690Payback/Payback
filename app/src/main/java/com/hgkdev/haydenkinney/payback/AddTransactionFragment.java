@@ -76,9 +76,10 @@ public class AddTransactionFragment extends Fragment {
         adapter = new ParseQueryAdapter<ParseObject>(this.getActivity(), factory);
         adapter.setTextKey("groupName");
         groupSpinner.setAdapter(adapter);
-        groupSpinner.setSelection(1);
-
         adapter.loadObjects();
+
+        groupSpinner.setSelection(2);
+
 
         db = new DatabaseInteractor();
 

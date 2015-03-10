@@ -14,12 +14,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.parse.SignUpCallback;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -282,6 +286,26 @@ class Register_User extends AsyncTask<Void, Void, Void> {
             public void done(ParseException e) {
                 if (e == null) {
                     Log.i("PAYBACK", "User " + mNewUser.getUsername() + " successfully registered");
+                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Invitation");
+                    query.whereEqualTo("InviteeEmail", mNewUser.getUsername());
+                    query.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> parseObjects, ParseException e) {
+                            if(e != null) {
+                                Log.d("PAYBACK:InviteeQuery", e.toString());
+                            } else {
+                                for (int i = 0; i < parseObjects.size(); i++) {
+                                    try {
+                                        parseObjects.get(i).put("Invitee", mNewUser);
+                                        parseObjects.get(i).saveEventually();
+                                    } catch (Exception ex) {
+                                        Log.d("PAYBACK:InviteeRegistr:", ex.toString());
+                                    }
+                                }
+                            }
+                        }
+                    });
+
                 } else {
                     Toast.makeText(mActivity, "Email already used. Use forgot password if necessary", Toast.LENGTH_LONG).show();
                     mRegisterFailed = true;

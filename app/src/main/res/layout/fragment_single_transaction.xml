@@ -42,6 +42,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
             android:layout_marginLeft="12dp"
+            android:layout_marginBottom="8dp"
             android:id="@+id/txtView_singleTransaction_date"
             android:textColor="#74020202" />
     </LinearLayout>
@@ -66,24 +67,13 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="195dp">
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/listView_singleTransaction_people"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="New Button"
+            android:layout_marginTop="20dp"
             android:id="@+id/button_singleTransaction_update"
             android:layout_gravity="center_horizontal" />
 

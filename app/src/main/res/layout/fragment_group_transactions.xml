@@ -3,8 +3,44 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="GrpName"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:id="@+id/txtView_GroupTransactions_groupName" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Members"
+            android:id="@+id/button_GroupTransactions_addMembers"
+            android:layout_below="@+id/button_CreateGroup"
+            android:layout_alignLeft="@+id/button_CreateGroup"
+            android:layout_alignStart="@+id/button_CreateGroup"
+            android:layout_alignRight="@+id/button_CreateGroup"
+            android:layout_alignEnd="@+id/button_CreateGroup" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="125dp"
+            android:id="@+id/listView_GroupTransactions_members"
+            android:layout_marginBottom="15dp"/>
+
+
+    </LinearLayout>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listView_GroupTransactions" />
+
 </LinearLayout>

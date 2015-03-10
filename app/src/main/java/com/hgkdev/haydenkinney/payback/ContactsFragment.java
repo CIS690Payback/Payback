@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -36,13 +37,15 @@ import java.util.List;
  */
 public class ContactsFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "5";
+    private static ParseObject group;
     ListView list;
     ArrayList<Contact> contactsList;
-    public static ContactsFragment newInstance(int sectionNumber) {
+    public static ContactsFragment newInstance(int sectionNumber, ParseObject gr) {
         ContactsFragment fragment = new ContactsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
+        group = gr;
         return fragment;
     }
 
@@ -76,7 +79,8 @@ public class ContactsFragment extends Fragment {
 
                         if(isEmail(contactInfo)) {
                             if( ( invitee = isAccount(contactInfo ) ) != null) {
-                                createGroupInvite(invitee);  //TO:DO - ADD IN THE GROUP, SHOULD BE SENT WHEN GROUP PICKED FROM LIST
+//                                createGroupInvite(invitee);  //TO:DO - ADD IN THE GROUP, SHOULD BE SENT WHEN GROUP PICKED FROM LIST
+                                addToGroup(invitee);
                             }
                             else {
                                 sendAppInviteEmail(contactInfo);
@@ -95,6 +99,19 @@ public class ContactsFragment extends Fragment {
         return rootView;
     }
 
+    public void addToGroup(ParseUser invitee) {
+//        ParseObject post = ...;
+
+//        ParseUser user = ParseUser.getCurrentUser();
+//        ParseRelation relation = user.getRelation("posts");
+//        relation.add(post);
+//        user.saveInBackground();
+        ParseRelation relation = group.getRelation("users");
+        relation.add(invitee);
+        group.saveInBackground();
+
+    }
+
     public void createGroupInvite(ParseUser invitee) {
         ParseUser currentUser = ParseUser.getCurrentUser();
         ParseObject invitation = new ParseObject("Invitation");
@@ -106,10 +123,10 @@ public class ContactsFragment extends Fragment {
         invitation.saveInBackground(new SaveCallback()  {
             public void done(ParseException e) {
                 if( e == null ) {
-                    Log.d("PAYBACK:CONTACTSFRAGMENT: ", "Created a new invitation");
+                    Log.d("PAYBACK:CONTACTSFRAG: ", "Created a new invitation");
                     Toast.makeText(getActivity(), "Invite sent!", Toast.LENGTH_LONG).show();
                 } else {
-                    Log.d("PAYBACK:CONTACTSFRAGMENT: ", "Failed to create invitation w/ error " + e.toString());
+                    Log.d("PAYBACK:CONTACTSFRAG: ", "Failed to create invitation w/ error " + e.toString());
                 }
             }
         });
@@ -124,6 +141,24 @@ public class ContactsFragment extends Fragment {
         emailIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml("<h1><small>Hello!</small></h1>\n" +
                 "\n" +
                 "<p>You&#39;ve been requested to come join a group in Payback and simplify your group finances! It doesn't look like you're a user, so go ahead and download the app in the Play Store here:&nbsp;</p>"));
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        ParseObject invitation = new ParseObject("Invitation");
+
+        invitation.put("OriginatingUser", currentUser);
+        invitation.put("InviteeEmail", email);
+//        invitation.put("Group", null);
+
+        invitation.saveInBackground(new SaveCallback()  {
+            public void done(ParseException e) {
+                if( e == null ) {
+                    Log.d("PAYBACK:CONTACTSFRAG: ", "Created a new invitation");
+//                    Toast.makeText(getActivity(), "Invite sent!", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.d("PAYBACK:CONTACTSFRAG: ", "Failed to create invitation w/ error " + e.toString());
+                }
+            }
+        });
 
         startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
@@ -143,7 +178,7 @@ public class ContactsFragment extends Fragment {
             foundUser = query.find();
         } catch(Exception e) {
             foundUser = new ArrayList<ParseUser>();
-            Log.d("PAYBACK:CONTACTSFRAGMENT: ", "Failed in getting users with matching email");
+            Log.d("PAYBACK:CONTACTSFRAG: ", "Failed in getting users with matching email");
         }
         if(!foundUser.isEmpty() ) {
             return foundUser.get(0);

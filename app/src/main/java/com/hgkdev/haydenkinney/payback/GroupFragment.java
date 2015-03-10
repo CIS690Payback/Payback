@@ -47,7 +47,7 @@ public class GroupFragment extends Fragment {
 
 
     ListView groupsListView;
-    Button   registerGroupButton, viewContactsButton;
+    Button   registerGroupButton;
     EditText groupNameEditText;
     /**
      * Returns a new instance of this fragment for the given section
@@ -73,7 +73,6 @@ public class GroupFragment extends Fragment {
         groupsListView = (ListView) rootView.findViewById(R.id.groupView_Groups);
         groupNameEditText = (EditText) rootView.findViewById(R.id.editText_GroupName);
         registerGroupButton = (Button) rootView.findViewById(R.id.button_CreateGroup);
-        viewContactsButton = (Button) rootView.findViewById(R.id.button_ViewContacts);
 
 
         // Set up other variables
@@ -84,16 +83,7 @@ public class GroupFragment extends Fragment {
             }
         });
 
-        viewContactsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getFragmentManager();
 
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, ContactsFragment.newInstance(5))
-                        .addToBackStack("GroupsFromGroupsTransactionsFragment")
-                        .commit();
-            }
-        });
 
         ParseQueryAdapter.QueryFactory<ParseObject> factory = new ParseQueryAdapter.QueryFactory<ParseObject>() {
             public ParseQuery<ParseObject> create() {
@@ -170,7 +160,6 @@ public class GroupFragment extends Fragment {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Group");
         ParseUser currentUser = ParseUser.getCurrentUser();
         query.whereEqualTo("users", currentUser);
-//        query.clearCachedResult();
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> groupsList, ParseException e) {
                 if ( e == null ) {

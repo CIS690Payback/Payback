@@ -55,7 +55,6 @@ public class IndividualTransactionsFragment extends Fragment {
         dateTxtView.setText("Created on: " + transaction.getCreatedAt().toString().substring(0, 19) );
         netTxtView.setText("You are owed/owe $x");
         netLinearLayout.setBackgroundColor(Color.parseColor("#ffdddddd"));
-
         return rootView;
     }
 }

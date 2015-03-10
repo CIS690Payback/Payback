@@ -28,6 +28,13 @@ public class Contact {
         this.email.add(email);
     }
 
+    public Contact(String email) {
+        number = new ArrayList<String>();
+        this.email = new ArrayList<String>();
+        this.name = "";
+        this.email.add(email);
+    }
+
     public String getName() {
         return name;
     }
