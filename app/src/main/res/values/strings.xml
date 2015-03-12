@@ -12,5 +12,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Sign In</string>
     <string name="hello_world">Hello world!</string>
-
+    <string name="owed_color">#4CAF50</string>
+    <string name="owe_color">#D32F2F</string>
 </resources>

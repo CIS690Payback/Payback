@@ -81,7 +81,6 @@ public class ContactsFragment extends Fragment {
 
                         if(isEmail(contactInfo)) {
                             if( ( invitee = isAccount(contactInfo ) ) != null) {
-//                                createGroupInvite(invitee);  //TO:DO - ADD IN THE GROUP, SHOULD BE SENT WHEN GROUP PICKED FROM LIST
                                 addToGroup(invitee);
                             }
                             else {
