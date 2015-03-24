@@ -21,7 +21,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,6 +34,7 @@ public class ListTransactionFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "3";
     TextView amountOwed;
     ListView transactions;
+    ArrayList<Transaction> transactionsArray;
     double sum;
     /**
      * Returns a new instance of this fragment for the given section
@@ -65,7 +65,7 @@ public class ListTransactionFragment extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
 
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, (ParseObject)transactions.getAdapter().getItem( position )))
+                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, (Transaction)transactions.getAdapter().getItem( position )))
                         .addToBackStack("IndividualTransactionsFromListTransactions")
                         .commit();
 
@@ -108,6 +108,10 @@ public class ListTransactionFragment extends Fragment {
             }
         });
     }
+
+    public void asyncResult(ArrayList<Transaction> trans) {
+        transactionsArray = trans;
+    }
 }
 
 class LoadTransactionsAsync extends AsyncTask<Void, Void, ArrayList<Transaction>> {
@@ -133,101 +137,46 @@ class LoadTransactionsAsync extends AsyncTask<Void, Void, ArrayList<Transaction>
 
     protected ArrayList<Transaction> doInBackground(Void... params) {
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-        // ParseQuery not getting pointer for Group
-        ParseQuery innerQuery = new ParseQuery("Group");
-        innerQuery.whereEqualTo("users", ParseUser.getCurrentUser());
-        innerQuery.selectKeys(Arrays.asList("objectId"));
-        ParseQuery transactionQuery = new ParseQuery("Transaction");
-        transactionQuery.whereEqualTo("Group", innerQuery);
-        // Need to fix.
-        try{
-            List<ParseObject> ts = transactionQuery.find();
-            for( int i = 0; i < ts.size(); i++ ) {
-                ParseObject pO = ts.get( i );
-                boolean owed = false;
-                if(pO.getParseUser("Payer") == ParseUser.getCurrentUser()) {
-                    owed = true;
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        ParseQuery gQ = new ParseQuery("Group");
+        gQ.whereEqualTo("users", currentUser);
+        try {
+            List<ParseObject> listUserGroups = gQ.find();
+            ParseQuery transactionQuery = new ParseQuery("Transaction");
+            transactionQuery.whereContainedIn("Group", listUserGroups);
+            try{
+                List<ParseObject> ts = transactionQuery.find();
+                for( int i = 0; i < ts.size(); i++ ) {
+                    ParseObject pO = ts.get( i );
+                    boolean owed = false;
+                    if(pO.getParseUser("Payer") == ParseUser.getCurrentUser()) {
+                        owed = true;
+                    }
+                    Transaction t = new Transaction(pO.getString("Name"),
+                            pO.getDouble("Cost"),
+                            owed,
+                            pO.getString("Comment"),
+                            pO.getParseObject("Group"),
+                            pO.getCreatedAt());
+                    transactions.add(t);
                 }
-                Transaction t = new Transaction(pO.getString("description"),
-                                                pO.getDouble("cost"),
-                                                owed,
-                                                pO.getString("comment"),
-                                                pO.getParseObject("Group"),
-                                                pO.getCreatedAt());
-                transactions.add(t);
+            } catch( Exception ex ) {
+                Log.d("ListTransFrag: ", "Something screwed up in background " + ex.toString());
             }
-        } catch( Exception ex ) {
-            Log.d("ListTransFrag: ", "Something screwed up in background " + ex.toString());
+        } catch (Exception ex) {
+            Log.d("ListTranFrag", " Error finding users: " + ex.toString());
         }
 
-
-//        ArrayList<Contact> contacts = new ArrayList<Contact>();
-//
-//        Cursor c = mActivity.getApplicationContext().getContentResolver().query(
-//                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-//                null, null, null);
-//
-//        while(c.moveToNext()) {
-//            Uri thumbnailURI;
-//            boolean contactExists = false;
-//
-//            String contactName = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-//            String phoneNumber = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-//
-//            for( Contact con : contacts ) {
-//                if (contactName.equals(con.getName())) {
-//                    con.setNumber(phoneNumber);
-//                    contactExists = true;
-//                }
-//            }
-//            if(!contactExists) {
-//                try {
-//                    thumbnailURI = Uri.parse(c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI)));
-//                } catch(Exception exception) {
-//                    thumbnailURI = null;
-//                }
-//                contacts.add(new Contact(contactName, phoneNumber, thumbnailURI));
-//            }
-//        }
-//        c.close();
-//
-//        Cursor e = mActivity.getApplicationContext().getContentResolver().query(
-//                ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-//                null, null, null);
-//
-//        while(e.moveToNext()) {
-//            boolean contactExists = false;
-//
-//            String contactName = e.getString(e.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-//            String emailAddress = e.getString(e.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
-//
-//            for( Contact con : contacts ) {
-//                if (contactName.equals(con.getName())) {
-//                    con.setNumber(emailAddress);
-//                    contactExists = true;
-//                }
-//            }
-//            if(!contactExists) {
-//                contacts.add(new Contact(contactName, emailAddress));
-//            }
-//        }
-//        c.close();
-//
-//        Collections.sort(contacts, new Comparator<Contact>() {
-//            public int compare(Contact c1, Contact c2) {
-//                return c1.getName().compareTo(c2.getName());
-//            }
-//        });
 
         return transactions;
     }
 
     protected void onPostExecute(ArrayList<Transaction> transactions) {
         super.onPostExecute(transactions);
-//        cf.asyncResult(transactions);
+        ltf.asyncResult(transactions);
         Transaction[] transactionsArray = new Transaction[transactions.size()];
         transactionsArray = transactions.toArray(transactionsArray);
-        ListTransactionAdapter customAdapter = new ListTransactionAdapter( mActivity, R.layout.item_contact, transactionsArray);
+        ListTransactionAdapter customAdapter = new ListTransactionAdapter( mActivity, R.layout.item_transaction_list, transactionsArray);
         transactionsList.setAdapter(customAdapter);
         progressDialog.cancel();
 

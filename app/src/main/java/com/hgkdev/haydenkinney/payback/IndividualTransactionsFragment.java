@@ -13,12 +13,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.ParseObject;
-
 
 public class IndividualTransactionsFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "6";
-    public static ParseObject transaction;
+    public static Transaction transaction;
 
     private LinearLayout netLinearLayout;
     private TextView nameTxtView, costTxtView, dateTxtView, netTxtView;
@@ -27,12 +25,12 @@ public class IndividualTransactionsFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static IndividualTransactionsFragment newInstance(int sectionNumber, ParseObject g) {
+    public static IndividualTransactionsFragment newInstance(int sectionNumber, Transaction t) {
         IndividualTransactionsFragment fragment = new IndividualTransactionsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
-        transaction = g;
+        transaction = t;
         return fragment;
     }
 
@@ -50,10 +48,16 @@ public class IndividualTransactionsFragment extends Fragment {
         netTxtView = (TextView)rootView.findViewById(R.id.txtView_singleTransaction_netAmount);
         netLinearLayout = (LinearLayout)rootView.findViewById(R.id.linearLayout_singleTransaction_netAmount);
 
-        nameTxtView.setText(transaction.getString("Name") );
-        costTxtView.setText("$" + transaction.getNumber("Cost").toString() );
-        dateTxtView.setText("Created on: " + transaction.getCreatedAt().toString().substring(0, 19) );
-        netTxtView.setText("You are owed/owe $x");
+        nameTxtView.setText(transaction.getDescription() );
+        costTxtView.setText("$" + String.valueOf(transaction.getCost() ) );
+        dateTxtView.setText("Created on: " + transaction.getDate().toString().substring(0, 19) );
+        if(transaction.getOwed()) {
+            netTxtView.setText("You are owed $X");
+            netTxtView.setTextColor(Color.parseColor("#4CAF50"));
+        } else {
+            netTxtView.setText("You owe $X");
+            netTxtView.setTextColor(Color.parseColor("#D32F2F"));
+        }
         netLinearLayout.setBackgroundColor(Color.parseColor("#ffdddddd"));
         return rootView;
     }

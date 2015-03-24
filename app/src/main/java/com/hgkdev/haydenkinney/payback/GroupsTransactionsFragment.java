@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -114,18 +113,18 @@ public class GroupsTransactionsFragment extends Fragment {
 
         adapter.loadObjects();
 
-        transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentManager fragmentManager = getFragmentManager();
-
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, adapter.getItem( position )))
-                        .addToBackStack("IndividualTransactionsFromGroupsTransactions")
-                        .commit();
-
-            }
-        });
+//        transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                FragmentManager fragmentManager = getFragmentManager();
+//
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, adapter.getItem( position )))
+//                        .addToBackStack("IndividualTransactionsFromGroupsTransactions")
+//                        .commit();
+//
+//            }
+//        });
 
 
         return rootView;

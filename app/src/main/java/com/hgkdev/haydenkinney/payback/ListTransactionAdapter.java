@@ -2,6 +2,7 @@ package com.hgkdev.haydenkinney.payback;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ public class ListTransactionAdapter extends ArrayAdapter<Transaction> {
         View row = convertView;
         TransactionHolder holder = null;
 
-        Log.d("PAYBACK:TRANSADAPTER: ", "Entered if block of getView");
+        Log.d("PAYBACK:CONTACTSADAPTER: ", "Entered if block of getView of ContactsAdapter");
 
         if(row == null) {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
@@ -58,16 +59,16 @@ public class ListTransactionAdapter extends ArrayAdapter<Transaction> {
         String description = trans.getDescription();
         ParseObject group = trans.getGroup();
         String groupName = group.getString("groupName");
-        String cost = String.valueOf(trans.getCost());
+//        String cost = String.valueOf(trans.getCost());
         Boolean owed = trans.getOwed();
 
         holder.txtDescription.setText(description);
         holder.txtGroupName.setText(groupName);
-        holder.txtCost.setText(cost);
+        holder.txtCost.setText(String.format("$%,.2f", trans.getCost()));
         if(owed) {
-            holder.txtCost.setTextColor(R.string.owed_color);
+            holder.txtCost.setTextColor(Color.parseColor("#4CAF50"));
         } else {
-            holder.txtCost.setTextColor(R.string.owe_color);
+            holder.txtCost.setTextColor(Color.parseColor("#D32F2F"));
         }
 
         return row;
