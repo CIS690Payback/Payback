@@ -1,22 +1,23 @@
 package com.hgkdev.haydenkinney.payback;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -28,11 +29,12 @@ import java.util.List;
 public class GroupsTransactionsFragment extends Fragment {
 
     private static ParseObject group;
-    private ListView transactionList, membersList;
+    public ListView transactionList, membersList;
     private TextView groupNameTxt;
     private Button   addMemberBtn;
     private ParseQueryAdapter<ParseObject> adapter;
     private ArrayList<Contact> groupMems;
+    private ArrayList<Transaction> transactionsArray;
 
     public static GroupsTransactionsFragment newInstance(int sectionNumber, ParseObject g) {
         GroupsTransactionsFragment fragment = new GroupsTransactionsFragment();
@@ -75,159 +77,89 @@ public class GroupsTransactionsFragment extends Fragment {
         membersList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions_members);
         transactionList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions);
 
-        ParseQueryAdapter.QueryFactory<ParseObject> factory =
-        new ParseQueryAdapter.QueryFactory<ParseObject>() {
-            public ParseQuery create() {
-                ParseQuery query = new ParseQuery("Transaction");
-                query.whereEqualTo("Group", group);
-                return query;
-            }
-        };
-
-        ParseRelation usersGroupRelation = group.getRelation( "users" );
-        groupMems = new ArrayList<Contact>();
-
-        usersGroupRelation.getQuery().findInBackground(new FindCallback() {
+        transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void done(List list, ParseException e) {
-                if(e == null) {
-                    Log.d("PB:GTF:", "Found " + list.size() + " group members");
-                    for(int i = 0; i < list.size(); i++) {
-                        ParseUser u = ((ParseUser)list.get(i));
-                        Contact c = new Contact(u.getUsername());
-                        groupMems.add(c);
-                    }
-                    Contact[] cA = new Contact[groupMems.size()];
-                    cA = groupMems.toArray(cA);
-                    GroupMemberAdapter gMA = new GroupMemberAdapter(getActivity(), R.layout.item_group_member, cA);
-                    membersList.setAdapter(gMA);
-                } else {
-                    Log.d("PB:GTF:", e.toString());
-                }
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentManager fragmentManager = getFragmentManager();
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, (Transaction)transactionList.getAdapter().getItem( position )))
+                        .addToBackStack("IndividualTransactionsFromListTransactions")
+                        .commit();
+
             }
         });
 
-        adapter = new ParseQueryAdapter<ParseObject>(this.getActivity(), factory);
-        adapter.setTextKey("Name");
-        transactionList.setAdapter(adapter);
-
-        adapter.loadObjects();
-
-//        transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                FragmentManager fragmentManager = getFragmentManager();
-//
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.container, IndividualTransactionsFragment.newInstance(6, adapter.getItem( position )))
-//                        .addToBackStack("IndividualTransactionsFromGroupsTransactions")
-//                        .commit();
-//
-//            }
-//        });
-
+        LoadGroupTransactionsAsync lGTA = new LoadGroupTransactionsAsync(getActivity(), transactionList, this, group);
+        lGTA.execute();
 
         return rootView;
     }
 
-
-
+    public void asyncResult(ArrayList<Transaction> trans) {
+        transactionsArray = trans;
+    }
 }
 
-//class LoadGroupMembersAsync extends AsyncTask<Void, Void, ArrayList<Contact>> {
-//    ProgressDialog progressDialog;
-//    Activity mActivity;
-//    ListView contactsList;
-//    GroupsTransactionsFragment gtf;
-//
-//    public LoadGroupMembersAsync(Activity activity, ListView contactsList, GroupsTransactionsFragment gtf ) {
-//        mActivity = activity;
-//        this.contactsList = contactsList;
-//        progressDialog = new ProgressDialog( mActivity );
-//        this.gtf = gtf;
-//    }
-//
-//    protected void onPreExecute() {
-//        super.onPreExecute();
-//        progressDialog.setCancelable(true);
-//        progressDialog.setMessage("Loading Group Members");
-//        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        progressDialog.show();
-//    }
-//
-//    protected ArrayList<Contact> doInBackground(Void... params) {
-//        ArrayList<Contact> contacts = new ArrayList<Contact>();
-//
-//        ParseQuery<ParseObject> currentMembersQuery = new ParseQuery("Group");
-//        currentMembersQuery.get("")
-////        Cursor c = mActivity.getApplicationContext().getContentResolver().query(
-////                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-////                null, null, null);
-////
-////        while(c.moveToNext()) {
-////            Uri thumbnailURI;
-////            boolean contactExists = false;
-////
-////            String contactName = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-////            String phoneNumber = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-////
-////            for( Contact con : contacts ) {
-////                if (contactName.equals(con.getName())) {
-////                    con.setNumber(phoneNumber);
-////                    contactExists = true;
-////                }
-////            }
-////            if(!contactExists) {
-////                try {
-////                    thumbnailURI = Uri.parse(c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI)));
-////                } catch(Exception exception) {
-////                    thumbnailURI = null;
-////                }
-////                contacts.add(new Contact(contactName, phoneNumber, thumbnailURI));
-////            }
-////        }
-////        c.close();
-////
-////        Cursor e = mActivity.getApplicationContext().getContentResolver().query(
-////                ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-////                null, null, null);
-////
-////        while(e.moveToNext()) {
-////            boolean contactExists = false;
-////
-////            String contactName = e.getString(e.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-////            String emailAddress = e.getString(e.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
-////
-////            for( Contact con : contacts ) {
-////                if (contactName.equals(con.getName())) {
-////                    con.setNumber(emailAddress);
-////                    contactExists = true;
-////                }
-////            }
-////            if(!contactExists) {
-////                contacts.add(new Contact(contactName, emailAddress));
-////            }
-////        }
-////        c.close();
-////
-////        Collections.sort(contacts, new Comparator<Contact>() {
-////            public int compare(Contact c1, Contact c2) {
-////                return c1.getName().compareTo(c2.getName());
-////            }
-////        });
-////
-////        return contacts;
-//    }
-//
-//    protected void onPostExecute(ArrayList<Contact> contacts) {
-//        super.onPostExecute(contacts);
-//        cf.asyncResult(contacts);
-//        Contact[] contactArray = new Contact[contacts.size()];
-//        contactArray = contacts.toArray(contactArray);
-//        ContactsAdapter customAdapter = new ContactsAdapter( mActivity, R.layout.item_contact, contactArray);
-//        contactsList.setAdapter(customAdapter);
-//        progressDialog.cancel();
-//
-//    }
-//}
-//
+class LoadGroupTransactionsAsync extends AsyncTask<Void, Void, ArrayList<Transaction>> {
+    ProgressDialog progressDialog;
+    Activity mActivity;
+    ListView transactionsList;
+    GroupsTransactionsFragment gtf;
+    ParseObject currentGroup;
+
+    public LoadGroupTransactionsAsync(Activity activity, ListView transactionsList, GroupsTransactionsFragment gtf, ParseObject cG ) {
+        mActivity = activity;
+        this.transactionsList = transactionsList;
+        progressDialog = new ProgressDialog( mActivity );
+        this.gtf = gtf;
+        currentGroup = cG;
+    }
+
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog.setCancelable(true);
+        progressDialog.setMessage("Loading Transactions");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+    }
+
+    protected ArrayList<Transaction> doInBackground(Void... params) {
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+
+        ParseQuery transactionQuery = new ParseQuery("Transaction");
+        transactionQuery.whereEqualTo("Group", currentGroup);
+        try{
+            List<ParseObject> ts = transactionQuery.find();
+            for( int i = 0; i < ts.size(); i++ ) {
+                ParseObject pO = ts.get( i );
+                boolean owed = false;
+                if(pO.getParseUser("Payer") == ParseUser.getCurrentUser()) {
+                    owed = true;
+                }
+                Transaction t = new Transaction(pO.getString("Name"),
+                        pO.getDouble("Cost"),
+                        owed,
+                        pO.getString("Comment"),
+                        pO.getParseObject("Group"),
+                        pO.getCreatedAt());
+                transactions.add(t);
+            }
+        } catch( Exception ex ) {
+            Log.d("ListTransFrag: ", "Something screwed up in background " + ex.toString());
+        }
+
+        return transactions;
+    }
+
+    protected void onPostExecute(ArrayList<Transaction> transactions) {
+        super.onPostExecute(transactions);
+        gtf.asyncResult(transactions);
+        Transaction[] transactionsArray = new Transaction[transactions.size()];
+        transactionsArray = transactions.toArray(transactionsArray);
+        GroupsTransactionsAdapter customAdapter = new GroupsTransactionsAdapter( mActivity, R.layout.item_group_transaction, transactionsArray);
+        transactionsList.setAdapter(customAdapter);
+        progressDialog.cancel();
+
+    }
+}
