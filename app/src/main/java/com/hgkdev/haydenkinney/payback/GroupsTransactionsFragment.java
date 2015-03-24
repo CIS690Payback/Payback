@@ -15,9 +15,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -75,8 +78,32 @@ public class GroupsTransactionsFragment extends Fragment {
         });
 
         membersList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions_members);
-        transactionList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions);
 
+        ParseRelation usersGroupRelation = group.getRelation( "users" );
+        groupMems = new ArrayList<Contact>();
+
+        usersGroupRelation.getQuery().findInBackground(new FindCallback() {
+            @Override
+            public void done(List list, ParseException e) {
+                if(e == null) {
+                    Log.d("PB:GTF:", "Found " + list.size() + " group members");
+                    for(int i = 0; i < list.size(); i++) {
+                        ParseUser u = ((ParseUser)list.get(i));
+                        Contact c = new Contact(u.getUsername());
+                        groupMems.add(c);
+                    }
+                    Contact[] cA = new Contact[groupMems.size()];
+                    cA = groupMems.toArray(cA);
+                    GroupMemberAdapter gMA = new GroupMemberAdapter(getActivity(), R.layout.item_group_member, cA);
+                    membersList.setAdapter(gMA);
+                } else {
+                    Log.d("PB:GTF:", e.toString());
+                }
+            }
+        });
+
+
+        transactionList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions);
         transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
