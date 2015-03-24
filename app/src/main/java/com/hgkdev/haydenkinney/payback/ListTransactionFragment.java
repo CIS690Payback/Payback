@@ -152,12 +152,15 @@ class LoadTransactionsAsync extends AsyncTask<Void, Void, ArrayList<Transaction>
                     if(pO.getParseUser("Payer") == ParseUser.getCurrentUser()) {
                         owed = true;
                     }
+                    Number n = pO.getNumber("userCount");
+                    int in = n.intValue();
                     Transaction t = new Transaction(pO.getString("Name"),
                             pO.getDouble("Cost"),
                             owed,
                             pO.getString("Comment"),
                             pO.getParseObject("Group"),
-                            pO.getCreatedAt());
+                            pO.getCreatedAt(),
+                            pO.getNumber("userCount").intValue());
                     transactions.add(t);
                 }
             } catch( Exception ex ) {

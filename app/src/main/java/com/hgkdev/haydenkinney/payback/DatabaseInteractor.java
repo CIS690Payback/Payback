@@ -22,6 +22,7 @@ public class DatabaseInteractor {
         addTransactionObject.put("Cost", cost);
         addTransactionObject.put("Group", group);
         addTransactionObject.put("Payer", user);
+        addTransactionObject.put("userCount", group.getNumber("userCount").intValue());
         addTransactionObject.saveInBackground();
     }
 

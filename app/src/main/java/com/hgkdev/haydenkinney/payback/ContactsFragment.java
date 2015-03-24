@@ -109,6 +109,11 @@ public class ContactsFragment extends Fragment {
 //        user.saveInBackground();
         ParseRelation relation = group.getRelation("users");
         relation.add(invitee);
+        Integer num = group.getInt("userCount");
+        int addNum = num.intValue();
+        addNum++;
+        num = Integer.valueOf(addNum);
+        group.put("userCount", num);
         group.saveInBackground();
 
     }

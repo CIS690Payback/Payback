@@ -49,13 +49,17 @@ public class IndividualTransactionsFragment extends Fragment {
         netLinearLayout = (LinearLayout)rootView.findViewById(R.id.linearLayout_singleTransaction_netAmount);
 
         nameTxtView.setText(transaction.getDescription() );
-        costTxtView.setText("$" + String.valueOf(transaction.getCost() ) );
+        costTxtView.setText(String.format("$%,.2f", transaction.getCost() ) );
         dateTxtView.setText("Created on: " + transaction.getDate().toString().substring(0, 19) );
         if(transaction.getOwed()) {
-            netTxtView.setText("You are owed $X");
+            if( transaction.getUserCount() == 1 ) {
+                netTxtView.setText("You owe yourself $" + transaction.getCost() );
+            } else {
+                netTxtView.setText("You are owed " + String.format("$%,.2f", Math.abs( transaction.getCost() / (transaction.getUserCount() ) ) * (transaction.getUserCount() - 1 ) ) );
+            }
             netTxtView.setTextColor(Color.parseColor("#4CAF50"));
         } else {
-            netTxtView.setText("You owe $X");
+            netTxtView.setText("You owe " + String.format("$%,.2f", Math.abs( transaction.getCost() / (transaction.getUserCount() ) ) * (transaction.getUserCount() - 1 ) ) );
             netTxtView.setTextColor(Color.parseColor("#D32F2F"));
         }
         netLinearLayout.setBackgroundColor(Color.parseColor("#ffdddddd"));

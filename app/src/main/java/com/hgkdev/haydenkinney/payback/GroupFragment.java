@@ -125,21 +125,26 @@ public class GroupFragment extends Fragment {
     public void createGroup() {
         ParseUser currentUser = ParseUser.getCurrentUser();
         ParseObject group = new ParseObject("Group");
+        if( groupNameEditText.getText().toString().length() > 0 ) {
+            group.put("groupName", groupNameEditText.getText().toString());
+            group.put("userCount", 1);
 
-        group.put("groupName", groupNameEditText.getText().toString());
+            ParseRelation<ParseObject> relation = group.getRelation("users");
+            relation.add(currentUser);
 
-        ParseRelation<ParseObject> relation = group.getRelation("users");
-        relation.add(currentUser);
-
-        group.saveInBackground(new SaveCallback()  {
-            public void done(ParseException e) {
-                if( e == null ) {
-                    createdGroup();
-                } else {
-                    Log.d("PAYBACK:GROUPS: ", "Failed to create group w/ error " + e.toString());
+            group.saveInBackground(new SaveCallback()  {
+                public void done(ParseException e) {
+                    if( e == null ) {
+                        createdGroup();
+                    } else {
+                        Log.d("PAYBACK:GROUPS: ", "Failed to create group w/ error " + e.toString());
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            Toast.makeText(getActivity(), "Please enter a group name", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public void createdGroup() {
