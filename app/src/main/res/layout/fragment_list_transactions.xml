@@ -5,7 +5,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="413dp">
+        android:layout_height="fill_parent">
 
         <ListView
             android:layout_width="wrap_content"
@@ -13,13 +13,5 @@
             android:id="@+id/listView_Transactions" />
     </RelativeLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_marginTop="15dp"
-        android:text="Amount Owed:"
-        android:id="@+id/txtView_AmountOwed"
-        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
