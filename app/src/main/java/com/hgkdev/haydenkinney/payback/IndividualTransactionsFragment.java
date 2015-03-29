@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,7 +21,7 @@ public class IndividualTransactionsFragment extends Fragment {
 
     private LinearLayout netLinearLayout;
     private TextView nameTxtView, costTxtView, dateTxtView, netTxtView;
-
+    private Button update, delete;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -47,6 +48,20 @@ public class IndividualTransactionsFragment extends Fragment {
         dateTxtView = (TextView)rootView.findViewById(R.id.txtView_singleTransaction_date);
         netTxtView = (TextView)rootView.findViewById(R.id.txtView_singleTransaction_netAmount);
         netLinearLayout = (LinearLayout)rootView.findViewById(R.id.linearLayout_singleTransaction_netAmount);
+        update = (Button)rootView.findViewById(R.id.button_singleTransaction_update);
+        delete = (Button)rootView.findViewById(R.id.button_singleTransaction_delete);
+
+        update.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                updateTransaction();
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteTransaction();
+            }
+        });
 
         nameTxtView.setText(transaction.getDescription() );
         costTxtView.setText(String.format("$%,.2f", transaction.getCost() ) );
@@ -64,5 +79,15 @@ public class IndividualTransactionsFragment extends Fragment {
         }
         netLinearLayout.setBackgroundColor(Color.parseColor("#ffdddddd"));
         return rootView;
+    }
+
+    private void deleteTransaction() {
+        // Need to implement. Obtain transaction object and delete. In transaction class
+        //  grab objectID, then in this class parseQuery for objectID and remove.
+    }
+
+    private void updateTransaction() {
+        // Need to implement. Redirect to update fragment. Pass transaction. Will
+        //  parseQuery on objectID and then put() to update
     }
 }

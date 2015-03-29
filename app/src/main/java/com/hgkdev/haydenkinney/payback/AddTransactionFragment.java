@@ -2,19 +2,23 @@ package com.hgkdev.haydenkinney.payback;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 /**
  * Created by HaydenKinney on 1/1/15.
@@ -94,13 +98,40 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private void addTransaction(View v) {
+        hideKeyboard();
         if(nameEditText.getText().length() > 0 && costEditText.getText().length() > 0) {
-            db.AddTransactionObject(nameEditText.getText().toString(),
-                 Double.parseDouble(costEditText.getText().toString()),
-                 adapter.getItem(groupSpinner.getSelectedItemPosition()),
-                 ParseUser.getCurrentUser());
+            ParseObject group = adapter.getItem(groupSpinner.getSelectedItemPosition());
+            ParseObject addTransactionObject = new ParseObject("Transaction");
+            addTransactionObject.put("Name", nameEditText.getText().toString());
+            addTransactionObject.put("Cost", Double.parseDouble(costEditText.getText().toString()));
+            addTransactionObject.put("Group", group);
+            addTransactionObject.put("Payer", ParseUser.getCurrentUser());
+            addTransactionObject.put("userCount", group.getNumber("userCount").intValue());
+            addTransactionObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if( e == null ) {
+                        Toast.makeText(getActivity(), "Added Transaction", Toast.LENGTH_LONG).show();
+                        nameEditText.setText("");
+                        costEditText.setText("");
+                        nameEditText.requestFocus();
+                    } else {
+                        Toast.makeText(getActivity(), "Transaction Creation Failed", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
         } else {
             sendToast("Please insert all values");
+        }
+    }
+
+    private void hideKeyboard() {
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 

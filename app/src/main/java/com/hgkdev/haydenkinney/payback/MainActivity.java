@@ -65,17 +65,13 @@ public class MainActivity extends Activity
         FragmentManager fragmentManager = getFragmentManager();
         if( position == 0 ) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                    .replace(R.id.container, AddTransactionFragment.newInstance(position + 1))
                     .commit();
         } else if( position == 1 ) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, AddTransactionFragment.newInstance(position + 1))
-                    .commit();
-        } else if( position == 2 ) {
-            fragmentManager.beginTransaction()
                     .replace(R.id.container, ListTransactionFragment.newInstance(position + 1))
                     .commit();
-        } else if( position == 3 ) {
+        } else if( position == 2 ) {
             fragmentManager.beginTransaction()
                     .replace(R.id.container, GroupFragment.newInstance(position + 1))
                     .commit();
