@@ -170,7 +170,8 @@ class LoadGroupTransactionsAsync extends AsyncTask<Void, Void, ArrayList<Transac
                         pO.getString("Comment"),
                         pO.getParseObject("Group"),
                         pO.getCreatedAt(),
-                        pO.getNumber("userCount").intValue());
+                        pO.getNumber("userCount").intValue(),
+                        pO.getObjectId());
                 transactions.add(t);
             }
         } catch( Exception ex ) {

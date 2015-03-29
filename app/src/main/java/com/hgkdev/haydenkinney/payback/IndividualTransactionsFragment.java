@@ -7,12 +7,22 @@ package com.hgkdev.haydenkinney.payback;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.DeleteCallback;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import java.util.List;
 
 
 public class IndividualTransactionsFragment extends Fragment {
@@ -48,14 +58,7 @@ public class IndividualTransactionsFragment extends Fragment {
         dateTxtView = (TextView)rootView.findViewById(R.id.txtView_singleTransaction_date);
         netTxtView = (TextView)rootView.findViewById(R.id.txtView_singleTransaction_netAmount);
         netLinearLayout = (LinearLayout)rootView.findViewById(R.id.linearLayout_singleTransaction_netAmount);
-        update = (Button)rootView.findViewById(R.id.button_singleTransaction_update);
         delete = (Button)rootView.findViewById(R.id.button_singleTransaction_delete);
-
-        update.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                updateTransaction();
-            }
-        });
 
         delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -82,12 +85,32 @@ public class IndividualTransactionsFragment extends Fragment {
     }
 
     private void deleteTransaction() {
-        // Need to implement. Obtain transaction object and delete. In transaction class
-        //  grab objectID, then in this class parseQuery for objectID and remove.
-    }
+        ParseQuery pQ = new ParseQuery("Transaction");
+        pQ.whereEqualTo("objectId", transaction.getObjectID());
+        pQ.findInBackground(new FindCallback() {
+            @Override
+            public void done(List list, ParseException e) {
+                if( e == null && list.size() > 0 ) {
+                    ParseObject o = (ParseObject)list.get(0);
+                    o.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if( e == null ) {
+                                getFragmentManager().popBackStackImmediate();
+                            } else {
+                                Log.d("PB:ITF", " threw in delete callback " + e.toString());
+                                Toast.makeText(getActivity(), "Found transaction but could not remove it", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else if( e != null ) {
+                    Log.d("PB:ITF", " threw in find callback " + e.toString() );
+                    Toast.makeText(getActivity(), "Error removing transaction", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Could not find transaction", Toast.LENGTH_LONG).show();
+                }
 
-    private void updateTransaction() {
-        // Need to implement. Redirect to update fragment. Pass transaction. Will
-        //  parseQuery on objectID and then put() to update
+            }
+        });
     }
 }

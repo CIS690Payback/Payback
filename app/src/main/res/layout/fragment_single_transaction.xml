@@ -72,14 +72,6 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Update Transaction"
-            android:layout_marginTop="20dp"
-            android:id="@+id/button_singleTransaction_update"
-            android:layout_gravity="center_horizontal" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="Delete Transaction"
             android:id="@+id/button_singleTransaction_delete"
             android:layout_gravity="center_horizontal" />

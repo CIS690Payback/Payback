@@ -13,8 +13,9 @@ public class Transaction {
     private ParseObject group;
     private Date date;
     private int userCount;
+    private String objectID;
 
-    public Transaction( String de, double cos, boolean o, String com, ParseObject g, Date da, int uC ) {
+    public Transaction( String de, double cos, boolean o, String com, ParseObject g, Date da, int uC, String obj ) {
         description = de;
         cost = cos;
         owed = o;
@@ -22,6 +23,7 @@ public class Transaction {
         group = g;
         date = da;
         userCount = uC;
+        objectID = obj;
     }
 
     public void setDescription(String d) {
@@ -49,6 +51,9 @@ public class Transaction {
     }
 
     public void setUserCount(int i) { userCount = i; }
+
+    public void setObjectID(String s) { objectID = s; }
+
     public String getDescription() {
         return description;
     }
@@ -72,6 +77,8 @@ public class Transaction {
     public Date getDate() { return date; }
 
     public int getUserCount() { return userCount; }
+
+    public String getObjectID() { return objectID; }
 }
 
 
