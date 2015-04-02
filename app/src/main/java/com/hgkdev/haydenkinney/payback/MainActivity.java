@@ -142,7 +142,6 @@ public class MainActivity extends Activity
         if (currentUser != null) {
             currentUser.logOut();
             ParseObject.unpinAllInBackground();
-            Toast.makeText(this, "User " + currentUser.getUsername() + " logged out", Toast.LENGTH_LONG).show();
         }
         startActivity(intent);
         finish();

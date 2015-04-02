@@ -102,6 +102,21 @@ public class GroupsTransactionsFragment extends Fragment {
             }
         });
 
+        membersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Contact selected = (Contact)membersList.getAdapter().getItem( position );
+
+                FragmentManager fragmentManager = getFragmentManager();
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, VenmoFragment.newInstance(12, selected.getEmail().get(0)))
+                        .addToBackStack("VenmoFragFromListTransactions")
+                        .commit();
+
+            }
+        });
+
 
         transactionList = (ListView) rootView.findViewById(R.id.listView_GroupTransactions);
         transactionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
